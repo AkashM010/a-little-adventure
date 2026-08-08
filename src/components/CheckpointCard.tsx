@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties } from 'react'
-import { Check, Lock, LockOpen, MapPin } from 'lucide-react'
+import { Check, Heart, Lock, LockOpen, MapPin } from 'lucide-react'
 import type { Reveal } from '../utils/crypto'
 
 interface Props {
@@ -26,14 +26,21 @@ export function CheckpointCard({
 }: Props) {
   const number = String(id).padStart(2, '0')
 
-  // Finale (checkpoint 5): hold the destination back for a moment after unlock.
+  // Finale (checkpoint 5): hold the destination back for a moment after unlock,
+  // filling the wait with deliberate suspense so it reads as theater, not lag.
   const staged = Boolean(reveal?.finale && justUnlocked)
   const [showDestination, setShowDestination] = useState(!staged)
+  const [suspenseLine, setSuspenseLine] = useState(false)
   useEffect(() => {
     if (!staged) return
     setShowDestination(false)
-    const t = setTimeout(() => setShowDestination(true), 2400)
-    return () => clearTimeout(t)
+    setSuspenseLine(false)
+    const t1 = setTimeout(() => setSuspenseLine(true), 1500)
+    const t2 = setTimeout(() => setShowDestination(true), 3300)
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+    }
   }, [staged])
 
   // Stagger entrance animations only on a fresh unlock, not on reload.
@@ -163,9 +170,21 @@ export function CheckpointCard({
           </div>
         </>
       ) : (
-        <p className="mt-5 animate-shimmer text-center font-serif text-sm italic text-rose motion-reduce:animate-none">
-          ...
-        </p>
+        <div className="mt-6 flex flex-col items-center gap-3 py-4 animate-fade-in motion-reduce:animate-none">
+          <Heart
+            size={22}
+            aria-hidden="true"
+            className="animate-heart fill-rose text-rose motion-reduce:animate-none"
+          />
+          <p className="animate-shimmer font-serif text-[15px] italic text-ink/60 motion-reduce:animate-none">
+            wait for it...
+          </p>
+          {suspenseLine && (
+            <p className="animate-fade-up text-[13px] text-ink/45 motion-reduce:animate-none">
+              one more breath. 🤍
+            </p>
+          )}
+        </div>
       )}
     </div>
   )

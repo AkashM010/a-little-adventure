@@ -6,7 +6,9 @@ import { FinalScreen } from './components/FinalScreen'
 import { UnlockModal } from './components/UnlockModal'
 import { RainPlanModal } from './components/RainPlanModal'
 import { RainBackground } from './components/RainBackground'
+import { CelebrationOverlay } from './components/CelebrationOverlay'
 import { useProgress } from './hooks/useProgress'
+import { CHECKPOINTS } from './data/checkpoints'
 
 const RESET_TAPS = 7
 const RESET_WINDOW_MS = 2500
@@ -19,6 +21,11 @@ export default function App() {
   const [rainOpen, setRainOpen] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const [justUnlockedId, setJustUnlockedId] = useState<number | null>(null)
+  const [celebration, setCelebration] = useState<{
+    count: number
+    nextTeaser: string | null
+    nextId: number | null
+  } | null>(null)
 
   const cardEls = useRef<Record<number, HTMLDivElement | null>>({})
   const tapCount = useRef(0)
@@ -66,10 +73,33 @@ export default function App() {
       const next = complete(id)
       if (next.length === 5) {
         setTimeout(() => setStage('final'), 700)
+        return
       }
+      // Celebrate + tease the next still-hidden checkpoint.
+      const upcoming = CHECKPOINTS.find(
+        (cp) => !next.includes(cp.id) && !reveals[cp.id],
+      )
+      setCelebration({
+        count: next.length,
+        nextTeaser: upcoming ? upcoming.teaser : null,
+        nextId: upcoming ? upcoming.id : null,
+      })
     },
-    [complete, setStage],
+    [complete, setStage, reveals],
   )
+
+  const handleCelebrationClose = useCallback(() => {
+    const targetId = celebration?.nextId
+    setCelebration(null)
+    if (targetId != null) {
+      setTimeout(() => {
+        cardEls.current[targetId]?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        })
+      }, 150)
+    }
+  }, [celebration])
 
   const handleLockedTap = useCallback(() => {
     setToast('Nice try. 😌 I’ve got the keys.')
@@ -125,6 +155,14 @@ export default function App() {
         onUnlock={handleUnlock}
       />
       <RainPlanModal open={rainOpen} onClose={() => setRainOpen(false)} />
+
+      {celebration && (
+        <CelebrationOverlay
+          count={celebration.count}
+          nextTeaser={celebration.nextTeaser}
+          onClose={handleCelebrationClose}
+        />
+      )}
 
       {toast && (
         <div

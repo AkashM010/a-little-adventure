@@ -20,6 +20,7 @@
   --animate-heart: heart 1.6s ease-in-out infinite;
   --animate-float-up: float-up 7s linear infinite;
   --animate-shimmer: shimmer 2.4s ease-in-out infinite;
+  --animate-burst: burst 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes fade-up {
@@ -60,6 +61,11 @@
 @keyframes shimmer {
   0%, 100% { opacity: 0.55; }
   50% { opacity: 1; }
+}
+
+@keyframes burst {
+  from { opacity: 1; transform: translate(0, 0) scale(1); }
+  to { opacity: 0; transform: translate(var(--dx, 0), var(--dy, 0)) scale(0.3); }
 }
 
 html {
