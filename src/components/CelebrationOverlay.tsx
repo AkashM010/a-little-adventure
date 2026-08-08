@@ -28,7 +28,7 @@ export function CelebrationOverlay({ count, nextTeaser, onClose }: Props) {
           dx: `${Math.cos(angle) * dist}px`,
           dy: `${Math.sin(angle) * dist}px`,
           size: 3 + (i % 3) * 2,
-          color: i % 3 === 0 ? '#c9a45f' : i % 3 === 1 ? '#a64d66' : '#dfd0ab',
+          color: i % 3 === 0 ? '#d4af71' : i % 3 === 1 ? '#b05a6e' : '#e9d7b0',
           delay: `${(i % 4) * 0.05}s`,
         }
       }),

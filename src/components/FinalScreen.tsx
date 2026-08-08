@@ -21,7 +21,7 @@ export function FinalScreen({ onRevisit }: { onRevisit: () => void }) {
         duration: `${6 + ((i * 3) % 5)}s`,
         opacity: 0.2 + ((i * 13) % 30) / 100,
         drift: `${((i % 5) - 2) * 14}px`,
-        color: i % 3 === 0 ? '#c9a45f' : '#a64d66',
+        color: i % 3 === 0 ? '#d4af71' : '#b05a6e',
       })),
     [],
   )

@@ -22,7 +22,7 @@ export function RainBackground({ tone }: { tone: 'dark' | 'light' }) {
 
     let raf = 0
     let drops: Drop[] = []
-    const color = tone === 'dark' ? '176, 198, 224' : '78, 100, 128'
+    const color = tone === 'dark' ? '233, 215, 176' : '112, 84, 96'
 
     const spawn = (w: number, h: number): Drop => ({
       x: Math.random() * w,
