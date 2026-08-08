@@ -1,0 +1,8 @@
+node_modules
+dist
+*.local
+.claude
+
+# PRIVATE — never push these. They contain the full surprise in plaintext.
+scripts/generate-secrets.mjs
+README.md
