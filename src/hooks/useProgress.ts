@@ -62,36 +62,6 @@ export function useProgress() {
   const unlock = useCallback(
     async (rawCode: string): Promise<UnlockResult | null> => {
       const code = normalizeCode(rawCode)
-      // TEMPORARY BIRTHDAY EMERGENCY UNLOCK - REMOVE AFTER USE
-if (code === 'BIRTHDAY2026' && !keysRef.current['2']) {
-  const reveal: Reveal = {
-    greeting: 'You made it. 🌳',
-    message:
-      "Let’s go somewhere a little greener.\n\nNo rush. No schedules. Just walk with me.",
-    name: 'Forestrek Park',
-    location: 'Chilkur / Hyderabad',
-    note:
-      "Take a little walk, enjoy the greenery, and let the monsoon do its thing. 🌧️",
-    highlight: 'Checkpoint 02 unlocked.',
-    footnote:
-      "If the rain gets too heavy, we skip the trek. The adventure is still on.",
-    mapQuery: 'Forestrek Park, Hyderabad',
-    completeLabel: 'MARK THIS CHECKPOINT COMPLETE',
-  }
-
-  keysRef.current['2'] = encodeKey(code)
-  setReveals((current) => ({ ...current, 2: reveal }))
-
-  setStageState((currentStage) => {
-    setCompleted((currentCompleted) => {
-      persist(currentStage, currentCompleted)
-      return currentCompleted
-    })
-    return currentStage
-  })
-
-  return { id: 2, reveal }
-}
       for (const id of [1, 2, 3, 4, 5]) {
         if (keysRef.current[String(id)]) continue
         const reveal = await tryDecrypt(id, code)
