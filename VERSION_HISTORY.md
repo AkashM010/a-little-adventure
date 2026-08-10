@@ -9,6 +9,20 @@ add an entry here.
 
 ---
 
+## v0.4.0 — Opening wish splash · Aug 10, 2026
+
+*Product idea (Akash):* greet the recipient with a celebration the moment they open
+the experience — e.g. a birthday wish animation.
+*Implementation:* a short cinematic splash before the landing screen, tappable to
+skip, personalized with the recipient's name, different per occasion:
+
+- 🎂 Birthday — "Happy Birthday, {name} 🎂" with falling confetti
+- ❤️ Anniversary — "Happy Anniversary, {name} ❤️" with soft floating hearts
+- 🔍 Gift Hunt — "The hunt is about to begin, {name} 🔍" with twinkling sparks
+
+Shows once at the start of the journey (not on every visit), and is skipped
+automatically for users who prefer reduced motion.
+
 ## v0.3.1 — Editor guidance polish · Aug 10, 2026
 
 *Product feedback (Akash):* template guidance shouldn't be text the creator has to

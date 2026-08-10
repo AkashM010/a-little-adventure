@@ -21,6 +21,7 @@
   --animate-float-up: float-up 7s linear infinite;
   --animate-shimmer: shimmer 2.4s ease-in-out infinite;
   --animate-burst: burst 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-confetti: confetti 3.2s linear both;
 }
 
 @keyframes fade-up {
@@ -66,6 +67,15 @@
 @keyframes burst {
   from { opacity: 1; transform: translate(0, 0) scale(1); }
   to { opacity: 0; transform: translate(var(--dx, 0), var(--dy, 0)) scale(0.3); }
+}
+
+@keyframes confetti {
+  0% { opacity: 0; transform: translateY(-10vh) translateX(0) rotate(0deg); }
+  8% { opacity: 1; }
+  100% {
+    opacity: 0.85;
+    transform: translateY(108vh) translateX(var(--sway, 20px)) rotate(var(--spin, 520deg));
+  }
 }
 
 html {

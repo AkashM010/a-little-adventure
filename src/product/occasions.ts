@@ -11,6 +11,8 @@ export interface OccasionConfig {
   tagline: string
   pickerLine: string
   momentLabel: string
+  /** Splash wish shown when the recipient first opens the link. {name} → ", Name". */
+  wish: string
   beginLabel: string
   introButton: string
   keyPrompt: string
@@ -33,6 +35,7 @@ export const OCCASIONS: Record<Occasion, OccasionConfig> = {
     tagline: 'A little adventure, one surprise at a time.',
     pickerLine: 'A day of checkpoints they can’t predict.',
     momentLabel: 'CHECKPOINT',
+    wish: 'Happy Birthday{name} 🎂',
     beginLabel: 'BEGIN THE ADVENTURE',
     introButton: 'LET’S GO',
     keyPrompt: 'Enter the key',
@@ -65,6 +68,7 @@ export const OCCASIONS: Record<Occasion, OccasionConfig> = {
     tagline: 'A walk through us.',
     pickerLine: 'Memories, moments, and one more thing.',
     momentLabel: 'MOMENT',
+    wish: 'Happy Anniversary{name} ❤️',
     beginLabel: 'START OUR STORY',
     introButton: 'WALK WITH ME',
     keyPrompt: 'Enter the key',
@@ -97,6 +101,7 @@ export const OCCASIONS: Record<Occasion, OccasionConfig> = {
     tagline: 'Follow the clues. Find the thing.',
     pickerLine: 'Riddles that lead somewhere real.',
     momentLabel: 'CLUE',
+    wish: 'The hunt is about to begin{name} 🔍',
     beginLabel: 'START THE HUNT',
     introButton: 'I’M READY',
     keyPrompt: 'Enter the key',

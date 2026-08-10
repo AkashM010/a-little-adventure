@@ -23,7 +23,7 @@ import { openPayload } from '../../utils/crypto'
 import { RainBackground } from '../../components/RainBackground'
 import { OCCASIONS } from '../occasions'
 import { loadPlay, savePlay, clearPlay } from '../store'
-import type { MomentReveal, SealedExperience, SealedMoment } from '../types'
+import type { MomentReveal, Occasion, SealedExperience, SealedMoment } from '../types'
 
 type Stage = 'landing' | 'intro' | 'journey' | 'ending'
 
@@ -55,6 +55,7 @@ export function Player({ sealed, mode, hints, onExit }: PlayerProps) {
   const [done, setDone] = useState<string[]>([])
   const [justOpened, setJustOpened] = useState<string | null>(null)
   const [keyModal, setKeyModal] = useState(false)
+  const [splashDone, setSplashDone] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const [celebration, setCelebration] = useState<{ count: number; teaser: string | null } | null>(
     null,
@@ -238,7 +239,16 @@ export function Player({ sealed, mode, hints, onExit }: PlayerProps) {
     >
       <RainBackground tone={dark ? 'dark' : 'light'} />
 
-      {stage === 'landing' && (
+      {stage === 'landing' && !splashDone && (
+        <WishSplash
+          occasion={sealed.occasion}
+          wish={config.wish}
+          toName={sealed.toName}
+          onDone={() => setSplashDone(true)}
+        />
+      )}
+
+      {stage === 'landing' && splashDone && (
         <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-7 py-14 text-center">
           <p
             className="animate-fade-up text-[11px] font-medium tracking-[0.28em] text-gold motion-reduce:animate-none"
@@ -434,6 +444,148 @@ export function Player({ sealed, mode, hints, onExit }: PlayerProps) {
         </button>
       )}
     </div>
+  )
+}
+
+/* -------------------------------- wish splash ------------------------------- */
+
+function WishSplash({
+  occasion,
+  wish,
+  toName,
+  onDone,
+}: {
+  occasion: Occasion
+  wish: string
+  toName: string
+  onDone: () => void
+}) {
+  // Reduced motion: skip the show entirely.
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      onDone()
+      return
+    }
+    const t = setTimeout(onDone, 2600)
+    return () => clearTimeout(t)
+  }, [onDone])
+
+  const text = wish.replace('{name}', toName.trim() ? `, ${toName.trim()}` : '')
+
+  const confetti = useMemo(
+    () =>
+      Array.from({ length: 46 }, (_, i) => ({
+        left: `${(i * 37) % 100}%`,
+        delay: `${((i * 13) % 18) / 10}s`,
+        duration: `${2.4 + ((i * 7) % 14) / 10}s`,
+        sway: `${((i % 7) - 3) * 16}px`,
+        spin: `${360 + ((i * 47) % 420)}deg`,
+        w: 5 + (i % 3) * 2,
+        h: 9 + (i % 4) * 3,
+        tone: i % 4,
+      })),
+    [],
+  )
+
+  const hearts = useMemo(
+    () =>
+      Array.from({ length: 12 }, (_, i) => ({
+        left: `${(i * 53) % 100}%`,
+        delay: `${(i * 0.4) % 2.4}s`,
+        duration: `${5 + (i % 3)}s`,
+        size: 12 + (i % 3) * 6,
+        opacity: 0.25 + ((i * 11) % 30) / 100,
+        drift: `${((i % 5) - 2) * 18}px`,
+      })),
+    [],
+  )
+
+  const sparks = useMemo(
+    () =>
+      Array.from({ length: 16 }, (_, i) => ({
+        left: `${(i * 41) % 100}%`,
+        top: `${(i * 29) % 100}%`,
+        delay: `${((i * 17) % 20) / 10}s`,
+        size: 10 + (i % 3) * 5,
+      })),
+    [],
+  )
+
+  return (
+    <button
+      type="button"
+      onClick={onDone}
+      aria-label="Continue"
+      className="fixed inset-0 z-40 flex cursor-default items-center justify-center overflow-hidden bg-ink px-8"
+    >
+      <span aria-hidden="true" className="pointer-events-none absolute inset-0">
+        {occasion === 'birthday' &&
+          confetti.map((c, i) => (
+            <span
+              key={i}
+              className={`absolute top-0 rounded-[2px] animate-confetti motion-reduce:animate-none motion-reduce:opacity-0 ${
+                c.tone === 0
+                  ? 'bg-gold'
+                  : c.tone === 1
+                    ? 'bg-rose'
+                    : c.tone === 2
+                      ? 'bg-gold-soft'
+                      : 'bg-cream/70'
+              }`}
+              style={
+                {
+                  left: c.left,
+                  width: c.w,
+                  height: c.h,
+                  animationDelay: c.delay,
+                  animationDuration: c.duration,
+                  '--sway': c.sway,
+                  '--spin': c.spin,
+                } as CSSProperties
+              }
+            />
+          ))}
+        {occasion === 'anniversary' &&
+          hearts.map((h, i) => (
+            <Heart
+              key={i}
+              size={h.size}
+              className="absolute bottom-0 fill-rose text-rose animate-float-up motion-reduce:animate-none motion-reduce:opacity-0"
+              style={
+                {
+                  left: h.left,
+                  animationDelay: h.delay,
+                  animationDuration: h.duration,
+                  '--particle-opacity': h.opacity,
+                  '--particle-drift': h.drift,
+                } as CSSProperties
+              }
+            />
+          ))}
+        {occasion === 'gifthunt' &&
+          sparks.map((s, i) => (
+            <span
+              key={i}
+              className="absolute font-serif text-gold animate-shimmer motion-reduce:animate-none"
+              style={{
+                left: s.left,
+                top: s.top,
+                fontSize: s.size,
+                animationDelay: s.delay,
+              }}
+            >
+              ✦
+            </span>
+          ))}
+      </span>
+
+      <span
+        className="animate-pop relative z-10 block text-center font-serif text-[2.1rem] leading-snug text-cream motion-reduce:animate-none"
+        style={{ animationDelay: '0.35s' }}
+      >
+        {text}
+      </span>
+    </button>
   )
 }
 
