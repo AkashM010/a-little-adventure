@@ -135,7 +135,9 @@ export function HomeScreen() {
               It still lives here.
             </a>
           </p>
-          <p className="mt-1 text-[10px] tracking-[0.18em] text-cream/20">PROTOTYPE</p>
+          <p className="mt-1 text-[10px] tracking-[0.18em] text-cream/20">
+            PROTOTYPE · v{__APP_VERSION__}
+          </p>
         </footer>
       </div>
     </div>
