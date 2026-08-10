@@ -17,6 +17,7 @@ import {
   KeyRound,
   Plus,
   Share2,
+  Sparkles,
   Trash2,
   X,
 } from 'lucide-react'
@@ -24,6 +25,7 @@ import { RainBackground } from '../../components/RainBackground'
 import { OCCASIONS, buildTemplate, newMoment, pickKey } from '../occasions'
 import { getDraft, saveDraft } from '../store'
 import { seal, shareUrl, cheatSheet, buildHints } from '../share'
+import { buildPrompt, type PromptKind } from '../prompts'
 import { Player } from './Player'
 import type { Experience, Moment, Occasion, SealedExperience, UnlockRule } from '../types'
 
@@ -104,6 +106,7 @@ function Editor({ draftId }: { draftId: string }) {
   const [preview, setPreview] = useState<SealedExperience | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
+  const [promptFor, setPromptFor] = useState<PromptKind | null>(null)
   const saveTimer = useRef<number | undefined>(undefined)
 
   // Autosave (debounced a touch to avoid hammering localStorage).
@@ -225,7 +228,7 @@ function Editor({ draftId }: { draftId: string }) {
                 className={inputCls}
               />
             </Field>
-            <Field label="Title of the experience">
+            <Field label="Title of the experience" onHelp={() => setPromptFor({ kind: 'title' })}>
               <input
                 type="text"
                 value={exp.title}
@@ -239,6 +242,7 @@ function Editor({ draftId }: { draftId: string }) {
           <Section
             title="THE OPENING"
             hint="Shown line by line before the journey begins. One line per row."
+            onHelp={() => setPromptFor({ kind: 'opening' })}
           >
             <textarea
               value={exp.introLines.join('\n')}
@@ -272,6 +276,7 @@ function Editor({ draftId }: { draftId: string }) {
                   usedKeys={exp.moments.flatMap((x) =>
                     x.id !== m.id && x.unlock.type === 'key' ? [x.unlock.key] : [],
                   )}
+                  onPrompt={setPromptFor}
                 />
               ))}
             </div>
@@ -286,7 +291,11 @@ function Editor({ draftId }: { draftId: string }) {
           </Section>
 
           {/* Ending */}
-          <Section title="THE ENDING" hint="What they see when everything is done.">
+          <Section
+            title="THE ENDING"
+            hint="What they see when everything is done."
+            onHelp={() => setPromptFor({ kind: 'ending' })}
+          >
             <Field label="Headline">
               <input
                 type="text"
@@ -326,6 +335,9 @@ function Editor({ draftId }: { draftId: string }) {
         </div>
 
         {shareOpen && <ShareSheet exp={exp} onClose={() => setShareOpen(false)} />}
+        {promptFor && (
+          <PromptSheet exp={exp} req={promptFor} onClose={() => setPromptFor(null)} />
+        )}
       </div>
     </div>
   )
@@ -334,28 +346,59 @@ function Editor({ draftId }: { draftId: string }) {
 const inputCls =
   'w-full rounded-xl border border-ink/15 bg-white px-4 py-3 text-[15px] text-ink placeholder:text-ink/30 focus:border-gold focus:ring-2 focus:ring-gold/40 focus:outline-none'
 
+function HelpButton({ onHelp }: { onHelp: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onHelp}
+      aria-label="Get an AI writing prompt for this"
+      title="Get an AI writing prompt"
+      className="flex shrink-0 items-center gap-1 rounded-full border border-gold/50 px-2.5 py-1 text-[10px] font-semibold tracking-[0.1em] text-burgundy transition-colors hover:bg-gold/15 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
+    >
+      <Sparkles size={11} aria-hidden="true" />
+      AI HELP
+    </button>
+  )
+}
+
 function Section({
   title,
   hint,
+  onHelp,
   children,
 }: {
   title: string
   hint?: string
+  onHelp?: () => void
   children: ReactNode
 }) {
   return (
     <section className="mt-8">
-      <h2 className="text-[11px] font-semibold tracking-[0.24em] text-burgundy">{title}</h2>
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-[11px] font-semibold tracking-[0.24em] text-burgundy">{title}</h2>
+        {onHelp && <HelpButton onHelp={onHelp} />}
+      </div>
       {hint && <p className="mt-1 text-[12.5px] text-ink/45">{hint}</p>}
       <div className="mt-3 space-y-3">{children}</div>
     </section>
   )
 }
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
+function Field({
+  label,
+  onHelp,
+  children,
+}: {
+  label: string
+  onHelp?: () => void
+  children: ReactNode
+}) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-[12.5px] font-medium text-ink/60">{label}</span>
+      <span className="mb-1.5 flex items-center justify-between gap-3">
+        <span className="text-[12.5px] font-medium text-ink/60">{label}</span>
+        {onHelp && <HelpButton onHelp={onHelp} />}
+      </span>
       {children}
     </label>
   )
@@ -382,6 +425,7 @@ function MomentEditor({
   onMove,
   onRemove,
   usedKeys,
+  onPrompt,
 }: {
   moment: Moment
   index: number
@@ -394,6 +438,7 @@ function MomentEditor({
   onMove: (dir: -1 | 1) => void
   onRemove: () => void
   usedKeys: string[]
+  onPrompt: (req: PromptKind) => void
 }) {
   const number = String(index + 1).padStart(2, '0')
 
@@ -437,7 +482,10 @@ function MomentEditor({
 
       {expanded && (
         <div className="space-y-4 border-t border-ink/10 px-5 pt-4 pb-5">
-          <Field label={`Teaser — what they see while ${label.toLowerCase()} is locked`}>
+          <Field
+            label={`Teaser — what they see while ${label.toLowerCase()} is locked`}
+            onHelp={() => onPrompt({ kind: 'teaser', moment })}
+          >
             <input
               type="text"
               value={moment.teaser}
@@ -446,7 +494,10 @@ function MomentEditor({
             />
           </Field>
 
-          <Field label="The reveal — your message when it opens">
+          <Field
+            label="The reveal — your message when it opens"
+            onHelp={() => onPrompt({ kind: 'reveal', moment })}
+          >
             <textarea
               value={moment.reveal.message}
               onChange={(e) =>
@@ -533,7 +584,10 @@ function MomentEditor({
 
             {moment.unlock.type === 'clue' && (
               <div className="mt-3 space-y-3">
-                <Field label="The clue or question they see">
+                <Field
+                  label="The clue or question they see"
+                  onHelp={() => onPrompt({ kind: 'clue', moment })}
+                >
                   <textarea
                     value={moment.unlock.clue}
                     onChange={(e) =>
@@ -744,6 +798,88 @@ function ShareSheet({ exp, onClose }: { exp: Experience; onClose: () => void }) 
             list away from curious eyes. 😌
           </p>
         </div>
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------- prompt sheet ------------------------------ */
+
+function PromptSheet({
+  exp,
+  req,
+  onClose,
+}: {
+  exp: Experience
+  req: PromptKind
+  onClose: () => void
+}) {
+  const prompt = useMemo(() => buildPrompt(exp, req), [exp, req])
+  const [copied, setCopied] = useState(false)
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(prompt)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // clipboard unavailable — text below is selectable
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/70 backdrop-blur-sm animate-fade-in motion-reduce:animate-none sm:items-center sm:px-6"
+      onClick={onClose}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="AI writing prompt"
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[88dvh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-cream px-6 pt-6 pb-8 shadow-2xl animate-fade-up motion-reduce:animate-none sm:rounded-3xl"
+      >
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="flex size-9 items-center justify-center rounded-full bg-gold/20 text-burgundy">
+              <Sparkles size={16} aria-hidden="true" />
+            </span>
+            <h2 className="font-serif text-2xl text-ink">Writing help</h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="-m-2 rounded-full p-2 text-ink/45 transition-colors hover:text-ink focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
+          >
+            <X size={18} aria-hidden="true" />
+          </button>
+        </div>
+
+        <p className="mt-3 text-[13.5px] leading-relaxed text-ink/60">
+          Copy this prompt into any AI you like — ChatGPT, Claude, Gemini... It already
+          knows your occasion, who it&rsquo;s for, and what you&rsquo;ve written so far.
+          Paste your favorite answer back into the field.
+        </p>
+
+        <div className="mt-4 max-h-[38dvh] overflow-y-auto rounded-xl border border-ink/12 bg-white px-4 py-3.5">
+          <p className="text-[12.5px] leading-relaxed whitespace-pre-wrap text-ink/75 select-all">
+            {prompt}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => void copy()}
+          className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-burgundy px-6 py-3.5 text-[13px] font-semibold tracking-[0.18em] text-cream shadow-sm transition-transform duration-200 active:scale-95 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
+        >
+          {copied ? <Check size={15} aria-hidden="true" /> : <Copy size={15} aria-hidden="true" />}
+          {copied ? 'COPIED — GO PASTE IT' : 'COPY PROMPT'}
+        </button>
+
+        <p className="mt-3 text-center text-[11.5px] text-ink/40">
+          Nothing is sent anywhere — you stay in control of which AI sees it.
+        </p>
       </div>
     </div>
   )

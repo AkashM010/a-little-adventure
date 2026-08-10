@@ -65,6 +65,15 @@ can feel the product in a minute.
 It lives at `#/aug9` with its own components and encrypted data. The product layer was
 built beside it, not on top of it.
 
+**9. AI help without AI integration.**
+Every writing field has an "AI HELP" button that generates a ready-to-paste prompt for
+whatever assistant the creator already uses (ChatGPT, Claude, Gemini...). The prompt
+carries all the context the creator would forget to type: occasion, recipient, the hidden
+surprise, the current draft, tone rules, and output format ("5 numbered options, nothing
+else"). Teaser prompts explicitly tell the AI not to spoil the surprise. We never call an
+AI, never ask for keys, and the user controls which AI sees their private plans. Worth
+testing: do creators actually round-trip to an AI, or does the button mostly reassure?
+
 ---
 
 ## What we deliberately did NOT build
