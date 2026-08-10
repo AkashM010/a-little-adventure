@@ -35,8 +35,13 @@ interface PlayerProps {
   onExit?: () => void
 }
 
+/** Creators can paste a Google Maps share link instead of a place name. */
+const isMapLink = (s: string) => /^https?:\/\//i.test(s.trim())
+
 const mapsUrl = (query: string) =>
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+  isMapLink(query)
+    ? query.trim()
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
 
 const timeReady = (at: string) => new Date(at).getTime() <= Date.now()
 
@@ -640,7 +645,7 @@ function MomentCard({
               {reveal.location && (
                 <p className="mt-2 flex items-center gap-1.5 text-[13px] text-ink/60">
                   <MapPin size={14} aria-hidden="true" className="shrink-0 text-rose" />
-                  {reveal.location}
+                  {isMapLink(reveal.location) ? 'Pinned location' : reveal.location}
                 </p>
               )}
             </div>

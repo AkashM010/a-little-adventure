@@ -15,6 +15,7 @@ import {
   Copy,
   Eye,
   KeyRound,
+  MapPin,
   Plus,
   Share2,
   Sparkles,
@@ -524,18 +525,41 @@ function MomentEditor({
               />
             </Field>
             <Field label="Location (optional — adds a map button)">
-              <input
-                type="text"
-                value={moment.reveal.location ?? ''}
-                onChange={(e) =>
-                  onChange((m) => ({
-                    ...m,
-                    reveal: { ...m.reveal, location: e.target.value || undefined },
-                  }))
-                }
-                placeholder="e.g. Jubilee Hills, Hyderabad"
-                className={inputCls}
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={moment.reveal.location ?? ''}
+                  onChange={(e) =>
+                    onChange((m) => ({
+                      ...m,
+                      reveal: { ...m.reveal, location: e.target.value || undefined },
+                    }))
+                  }
+                  placeholder="place name, or paste a Maps link"
+                  className={`${inputCls} min-w-0 flex-1`}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const q = (moment.reveal.location ?? '').trim()
+                    const url =
+                      q && !/^https?:\/\//i.test(q)
+                        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`
+                        : q || 'https://www.google.com/maps'
+                    window.open(url, '_blank', 'noopener')
+                  }}
+                  aria-label="Find on Google Maps"
+                  title="Find on Google Maps"
+                  className="flex shrink-0 items-center gap-1.5 rounded-xl border border-burgundy/40 px-3.5 text-[11px] font-semibold tracking-[0.08em] text-burgundy transition-colors hover:bg-burgundy/5 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
+                >
+                  <MapPin size={14} aria-hidden="true" />
+                  MAPS
+                </button>
+              </div>
+              <p className="mt-1.5 text-[11.5px] leading-relaxed text-ink/40">
+                Find the place there, then Share → Copy link and paste it here — their map
+                button will open that exact pin.
+              </p>
             </Field>
           </div>
 
