@@ -9,6 +9,18 @@ add an entry here.
 
 ---
 
+## v0.3.1 — Editor guidance polish · Aug 10, 2026
+
+*Product feedback (Akash):* template guidance shouldn't be text the creator has to
+erase, and the Maps auto-search behavior deserved an explanation in the UI.
+
+- Template guidance ([bracket] text) became real input placeholders — grey hints that
+  disappear as you type, per-moment guidance preserved
+- The share screen now warns about *unfinished* moments (empty teaser, message, or
+  clue) instead of leftover brackets
+- Location field tip now explains the flow: type → MAPS opens pre-searched → copy the
+  share link back for an exact pin
+
 ## v0.3.0 — Creator assist tools · Aug 10, 2026
 
 Two additions that make the *creating* side easier, both born from product

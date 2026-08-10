@@ -214,8 +214,8 @@ function Editor({ draftId }: { draftId: string }) {
 
         <main className="px-5 pt-4 pb-32">
           <p className="text-[13px] leading-relaxed text-ink/55">
-            Everything below is a starting point — rewrite whatever you like. Text in
-            [brackets] is waiting for you.
+            Everything below is a starting point — rewrite whatever you like. The grey text
+            in empty boxes is just guidance; it disappears the moment you type.
           </p>
 
           {/* Basics */}
@@ -491,6 +491,7 @@ function MomentEditor({
               type="text"
               value={moment.teaser}
               onChange={(e) => onChange((m) => ({ ...m, teaser: e.target.value }))}
+              placeholder={moment.hints?.teaser ?? 'a mysterious one-liner — no spoilers'}
               className={inputCls}
             />
           </Field>
@@ -505,6 +506,7 @@ function MomentEditor({
                 onChange((m) => ({ ...m, reveal: { ...m.reveal, message: e.target.value } }))
               }
               rows={3}
+              placeholder={moment.hints?.message ?? 'what do you want to say when this opens?'}
               className={`${inputCls} resize-y leading-relaxed`}
             />
           </Field>
@@ -520,7 +522,7 @@ function MomentEditor({
                     reveal: { ...m.reveal, name: e.target.value || undefined },
                   }))
                 }
-                placeholder="a place, a gift, an activity..."
+                placeholder={moment.hints?.name ?? 'a place, a gift, an activity...'}
                 className={inputCls}
               />
             </Field>
@@ -535,7 +537,7 @@ function MomentEditor({
                       reveal: { ...m.reveal, location: e.target.value || undefined },
                     }))
                   }
-                  placeholder="place name, or paste a Maps link"
+                  placeholder={moment.hints?.location ?? 'place name, or paste a Maps link'}
                   className={`${inputCls} min-w-0 flex-1`}
                 />
                 <button
@@ -557,8 +559,9 @@ function MomentEditor({
                 </button>
               </div>
               <p className="mt-1.5 text-[11.5px] leading-relaxed text-ink/40">
-                Find the place there, then Share → Copy link and paste it here — their map
-                button will open that exact pin.
+                Type the place and tap MAPS — Google Maps opens already searching for it.
+                Then Share → Copy link, paste it back here, and their map button will open
+                that exact pin.
               </p>
             </Field>
           </div>
@@ -621,7 +624,9 @@ function MomentEditor({
                       }))
                     }
                     rows={2}
-                    placeholder="Write a riddle, a question only they can answer..."
+                    placeholder={
+                      moment.hints?.clue ?? 'a riddle, or a question only they can answer...'
+                    }
                     className={`${inputCls} resize-y leading-relaxed`}
                   />
                 </Field>
@@ -635,7 +640,7 @@ function MomentEditor({
                         unlock: { ...(m.unlock as { type: 'clue'; clue: string; answer: string }), answer: e.target.value },
                       }))
                     }
-                    placeholder="the exact word or phrase"
+                    placeholder={moment.hints?.answer ?? 'the exact word or phrase'}
                     className={inputCls}
                   />
                 </Field>
@@ -711,12 +716,17 @@ function ShareSheet({ exp, onClose }: { exp: Experience; onClose: () => void }) 
   }, [exp])
 
   const sheet = cheatSheet(exp)
-  const placeholders = exp.moments.filter(
+  const unfinished = exp.moments.filter(
     (m) =>
+      !m.teaser.trim() ||
+      !m.reveal.message.trim() ||
       m.teaser.includes('[') ||
       m.reveal.message.includes('[') ||
-      (m.unlock.type === 'clue' && (!m.unlock.clue.trim() || !m.unlock.answer.trim())) ||
-      (m.unlock.type === 'clue' && (m.unlock.clue.includes('[') || m.unlock.answer.includes('['))),
+      (m.unlock.type === 'clue' &&
+        (!m.unlock.clue.trim() ||
+          !m.unlock.answer.trim() ||
+          m.unlock.clue.includes('[') ||
+          m.unlock.answer.includes('['))),
   ).length
 
   const copy = async () => {
@@ -754,10 +764,10 @@ function ShareSheet({ exp, onClose }: { exp: Experience; onClose: () => void }) 
           </button>
         </div>
 
-        {placeholders > 0 && (
+        {unfinished > 0 && (
           <p className="mt-3 rounded-xl bg-gold/15 px-4 py-3 text-[13px] leading-relaxed text-ink/75">
-            Heads up: {placeholders} moment{placeholders > 1 ? 's still have' : ' still has'}{' '}
-            [placeholder] text. It will show exactly as written.
+            Heads up: {unfinished} moment{unfinished > 1 ? 's are' : ' is'} not finished yet —
+            an empty teaser, message, or clue will show up blank for them.
           </p>
         )}
 

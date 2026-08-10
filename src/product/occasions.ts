@@ -136,13 +136,17 @@ export function pickKey(occasion: Occasion, used: string[]): string {
 export function newMoment(occasion: Occasion, usedKeys: string[]): Moment {
   const unlock: UnlockRule =
     occasion === 'gifthunt'
-      ? { type: 'clue', clue: '[Write a riddle or question here]', answer: '[the answer]' }
+      ? { type: 'clue', clue: '', answer: '' }
       : { type: 'key', key: pickKey(occasion, usedKeys) }
   return {
     id: uid(),
-    teaser: '[A mysterious one-liner about this surprise]',
+    teaser: '',
     unlock,
-    reveal: { message: '[What do you want to say when this opens?]' },
+    reveal: { message: '' },
+    hints: {
+      teaser: 'a mysterious one-liner about this surprise',
+      message: 'what do you want to say when this opens?',
+    },
   }
 }
 
@@ -177,48 +181,52 @@ export function buildTemplate(occasion: Occasion): Experience {
           id: uid(),
           teaser: 'Where the day begins.',
           unlock: { type: 'key', key: keys[0] },
-          reveal: {
-            message: '[Say something about the first stop — why you chose it]',
-            name: '[First place or activity]',
-            location: '[Area / city — powers the map button]',
+          reveal: { message: '' },
+          hints: {
+            message: 'say something about the first stop — why you chose it',
+            name: 'first place or activity',
+            location: 'area / city, e.g. Jubilee Hills, Hyderabad',
           },
         },
         {
           id: uid(),
           teaser: 'Something you’d never guess.',
           unlock: { type: 'key', key: keys[1] },
-          reveal: { message: '[The surprise activity — set it up with a line or two]', name: '[Activity]' },
+          reveal: { message: '' },
+          hints: {
+            message: 'the surprise activity — set it up with a line or two',
+            name: 'the activity',
+          },
         },
         {
           id: uid(),
           teaser: 'Time to refuel.',
           unlock: { type: 'key', key: keys[2] },
-          reveal: {
-            message: '[A line about the food stop]',
-            name: '[Restaurant / café]',
-            location: '[Area]',
+          reveal: { message: '' },
+          hints: {
+            message: 'a line about the food stop',
+            name: 'restaurant / café',
+            location: 'area',
           },
         },
         {
           id: uid(),
           teaser: 'Where we slow down.',
           unlock: { type: 'key', key: keys[3] },
-          reveal: { message: '[A quieter, personal moment — no activity needed]' },
+          reveal: { message: '' },
+          hints: { message: 'a quieter, personal moment — no activity needed' },
         },
         {
           id: uid(),
           teaser: 'The final little surprise.',
           unlock: { type: 'key', key: keys[4] },
-          reveal: { message: '[Save the warmest thing for last ❤️]', name: '[The finale]' },
+          reveal: { message: '' },
+          hints: { message: 'save the warmest thing for last ❤️', name: 'the finale' },
         },
       ],
       ending: {
         headline: 'Adventure Complete. ❤️',
-        lines: [
-          'A whole day of surprises.',
-          'Thank you for coming along.',
-          '[Your closing message]',
-        ],
+        lines: ['A whole day of surprises.', 'Thank you for coming along.'],
       },
     }
   }
@@ -240,33 +248,41 @@ export function buildTemplate(occasion: Occasion): Experience {
           id: uid(),
           teaser: 'Where this story began.',
           unlock: { type: 'key', key: 'VELVET' },
-          reveal: {
-            message: '[The story of how it started — your version of it]',
-            name: '[The place it began]',
-            location: '[Where]',
+          reveal: { message: '' },
+          hints: {
+            message: 'the story of how it started — your version of it',
+            name: 'the place it began',
+            location: 'where',
           },
         },
         {
           id: uid(),
           teaser: 'Something I never told you.',
-          unlock: { type: 'clue', clue: '[Ask something only they would know]', answer: '[the answer]' },
-          reveal: { message: '[Tell them the thing you never said]' },
+          unlock: { type: 'clue', clue: '', answer: '' },
+          reveal: { message: '' },
+          hints: {
+            clue: 'ask something only they would know',
+            answer: 'the answer',
+            message: 'tell them the thing you never said',
+          },
         },
         {
           id: uid(),
           teaser: 'Slow down with me.',
           unlock: { type: 'key', key: 'MOONRISE' },
-          reveal: {
-            message: '[A quiet stretch of time together — food, a walk, anything unhurried]',
-            name: '[Where you’ll be]',
-            location: '[Area]',
+          reveal: { message: '' },
+          hints: {
+            message: 'a quiet stretch of time together — food, a walk, anything unhurried',
+            name: 'where you’ll be',
+            location: 'area',
           },
         },
         {
           id: uid(),
           teaser: 'One more thing. ❤️',
           unlock: { type: 'key', key: 'GARNET' },
-          reveal: { message: '[The promise, the gift, or the words you’ve been saving]' },
+          reveal: { message: '' },
+          hints: { message: 'the promise, the gift, or the words you’ve been saving' },
         },
       ],
       ending: {
@@ -274,7 +290,6 @@ export function buildTemplate(occasion: Occasion): Experience {
         lines: [
           'Every moment above really happened.',
           'And the best ones aren’t written yet.',
-          '[Your closing line]',
         ],
       },
     }
@@ -296,31 +311,49 @@ export function buildTemplate(occasion: Occasion): Experience {
       {
         id: uid(),
         teaser: 'It starts with a riddle.',
-        unlock: { type: 'clue', clue: '[Riddle #1 — point them somewhere in the house/city]', answer: '[answer]' },
-        reveal: { message: '[Confirm what they found + hand them the next thread]', name: '[What’s at this spot]' },
+        unlock: { type: 'clue', clue: '', answer: '' },
+        reveal: { message: '' },
+        hints: {
+          clue: 'riddle #1 — point them somewhere in the house or city',
+          answer: 'the answer',
+          message: 'confirm what they found + hand them the next thread',
+          name: 'what’s at this spot',
+        },
       },
       {
         id: uid(),
         teaser: 'Getting warmer.',
-        unlock: { type: 'clue', clue: '[Riddle #2]', answer: '[answer]' },
-        reveal: { message: '[A taunt or an encouragement — hunter’s choice]' },
+        unlock: { type: 'clue', clue: '', answer: '' },
+        reveal: { message: '' },
+        hints: {
+          clue: 'riddle #2',
+          answer: 'the answer',
+          message: 'a taunt or an encouragement — hunter’s choice',
+        },
       },
       {
         id: uid(),
         teaser: 'So close now.',
-        unlock: { type: 'clue', clue: '[Riddle #3]', answer: '[answer]' },
-        reveal: { message: '[Almost there...]' },
+        unlock: { type: 'clue', clue: '', answer: '' },
+        reveal: { message: '' },
+        hints: { clue: 'riddle #3', answer: 'the answer', message: 'almost there...' },
       },
       {
         id: uid(),
         teaser: 'The last one. 🎁',
-        unlock: { type: 'clue', clue: '[The final riddle — make it the hardest]', answer: '[answer]' },
-        reveal: { message: '[The big reveal — where the gift actually is]', name: '[The gift]' },
+        unlock: { type: 'clue', clue: '', answer: '' },
+        reveal: { message: '' },
+        hints: {
+          clue: 'the final riddle — make it the hardest',
+          answer: 'the answer',
+          message: 'the big reveal — where the gift actually is',
+          name: 'the gift',
+        },
       },
     ],
     ending: {
       headline: 'Found it. 🎁',
-      lines: ['Every clue, cracked.', 'The prize was always going to be yours.', '[Your closing line]'],
+      lines: ['Every clue, cracked.', 'The prize was always going to be yours.'],
     },
   }
 }

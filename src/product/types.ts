@@ -17,11 +17,22 @@ export interface MomentReveal {
   location?: string
 }
 
+/** Editor-only guidance shown as input placeholders — never shipped to the recipient. */
+export interface MomentHints {
+  teaser?: string
+  message?: string
+  name?: string
+  location?: string
+  clue?: string
+  answer?: string
+}
+
 export interface Moment {
   id: string
   teaser: string
   unlock: UnlockRule
   reveal: MomentReveal
+  hints?: MomentHints
 }
 
 /** A full experience as the creator edits it. Lives only on the creator's device. */
